@@ -6,7 +6,4 @@ Un logger classique en typescript !
 ```
 
 ## Update
-- [ ] Création de la base 
-- [ ] Création des types
-- [ ] Première méthode
-- [ ] Seconde méthode
+- [ ] Create LogInConsole method
