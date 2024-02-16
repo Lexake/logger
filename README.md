@@ -3,6 +3,7 @@ Un logger classique en typescript !
 
 ## Installation
 ```
+git clone https://github.com/Lexake/logger.git
 npm install
 ```
 
