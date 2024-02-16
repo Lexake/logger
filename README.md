@@ -6,7 +6,7 @@ Un logger classique en typescript !
 ```
 
 ## Update
-- [ ] Création de la base #1
+- [ ] Création de la base https://github.com/octo-org/octo-repo/issues/740
 - [ ] Création des types
 - [ ] Première méthode
 - [ ] Seconde méthode
