@@ -6,7 +6,7 @@ Un logger classique en typescript !
 ```
 
 ## Update
-- [ ] Création de la base https://github.com/Lexake/logger/issues/1
+- [ ] https://github.com/Lexake/logger/issues/1 Création de la base 
 - [ ] Création des types
 - [ ] Première méthode
 - [ ] Seconde méthode
