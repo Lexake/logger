@@ -1,0 +1,36 @@
+{
+  "name": "@lib/logger",
+  "version": "1.0.0",
+  "description": "Logger complet et universel (Typescript)",
+  "license": "MIT",
+  "keywords": ["logger", "logging", "discord", "typescript"],
+  "author": "Lexou",
+  "type": "commonjs",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+        "import": "./dist/index.js",
+        "require": "./dist/index.js",
+        "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "clean": "rimraf dist"
+  },
+  "devDependencies": {
+    "@types/chalk": "^0.4.31",
+    "@types/node": "^25.2.3",
+    "typescript": "^5.9.3"
+  },
+  "peerDependencies": {
+    "discord.js": ">=14.0.0"
+  },
+  "peerDependenciesMeta": {
+    "discord.js": {
+        "optional": true
+    }
+  }
+}
