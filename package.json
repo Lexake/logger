@@ -1,5 +1,5 @@
 {
-  "name": "@lib/logger",
+  "name": "@lex0u/logger",
   "version": "1.0.0",
   "description": "Logger complet et universel (Typescript)",
   "license": "MIT",
