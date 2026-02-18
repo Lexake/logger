@@ -12,6 +12,8 @@
       "useUnknownInCatchVariables": true,
       "noUncheckedIndexedAccess": true,
       "lib": ["ESNext"],
+      "declaration": true,
+      "declarationMap": true,
       "module": "CommonJS",
       "newLine": "lf",
       "noEmitHelpers": true,
