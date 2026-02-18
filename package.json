@@ -1,6 +1,6 @@
 {
   "name": "@lex0u/logger",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Logger complet et universel (Typescript)",
   "license": "MIT",
   "keywords": ["logger", "logging", "discord", "typescript"],
