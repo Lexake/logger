@@ -23,6 +23,7 @@ export {
     type DiscordDMConfig,
     type DiscordGuildConfig,
     type DiscordDestination,
+    type IDiscordClient,
     // Interfaces
     type ILogOutput,
     type IDiscordGuild,
