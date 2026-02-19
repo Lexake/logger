@@ -61,7 +61,7 @@ export class Logger {
      * client.once("ready", () => logger.setDiscordClient(client));
      * client.login(token);
      */
-    setDiscordClient(client: Client): void {
+    setDiscordClient(client: Client<boolean | true | false>): void {
         if (!this.outputs.discord) {
             console.warn("[Logger] setDiscordClient() appelé mais la sortie Discord n'est pas configurée.");
             return;
