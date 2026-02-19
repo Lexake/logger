@@ -79,7 +79,47 @@ client.once("ready", () => {
 
 client.login(process.env.DISCORD_TOKEN);
 ```
+## 💬 Intégration Discord Optionnel
 
+```ts
+import { Logger, LogLevel } from '@lex0u/logger';
+import { Client, GatewayIntentBits } from 'discord.js';
+
+const discordConfig: DiscordOutputConfig = {
+    enabled:     config.isProd && !!config.bot.logChannelId,
+    minLevel:    LogLevel.Error,
+    destination: {
+        guildId: config.bot.guildId  ?? '',
+        channel: config.bot.logChannelId ?? '',
+    },
+};
+
+// On construit l'objet de config sans la clé discord si elle n'est pas utilisable,
+// car exactOptionalPropertyTypes interdit de passer undefined explicitement.
+const loggerConfig: LoggerConfig = {
+    console: {
+        enabled:  true,
+        minLevel: config.isDev ? LogLevel.Debug : LogLevel.Information,
+    },
+    file: {
+        enabled:      true,
+        folderPath:   './logs',
+        minLevel:     LogLevel.Information,
+        groupByLevel: true,
+        maxFileSize:  5_000_000,
+        maxDays:      config.isDev ? 7 : 30,
+    },
+    ...(config.bot.logChannelId && config.bot.guildId ? { discord: discordConfig } : {}),
+};
+const logger = new Logger(loggerConfig);
+const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+
+client.once("ready", () => {
+    logger.setDiscordClient(client);
+});
+
+client.login(process.env.DISCORD_TOKEN);
+```
 ---
 
 ## 🧠 Log Levels
