@@ -94,8 +94,6 @@ const discordConfig: DiscordOutputConfig = {
     },
 };
 
-// On construit l'objet de config sans la clé discord si elle n'est pas utilisable,
-// car exactOptionalPropertyTypes interdit de passer undefined explicitement.
 const loggerConfig: LoggerConfig = {
     console: {
         enabled:  true,
