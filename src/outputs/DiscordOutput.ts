@@ -1,7 +1,8 @@
-import type { APIEmbed, Client } from "discord.js";
+import type { APIEmbed } from "discord.js";
 import {
     DiscordGuildConfig,
     DiscordOutputConfig,
+    IDiscordClient,
     ILogOutput,
     LogLevel,
     LogPayload,
@@ -30,7 +31,7 @@ const MAX_QUEUE_SIZE = 100;
 
 export class DiscordOutput implements ILogOutput {
     private config: DiscordOutputConfig;
-    private client: Client | null = null;
+    private client: IDiscordClient | null = null;
 
     /**
      * Queue des payloads reçus avant que le client soit ready.
@@ -39,7 +40,7 @@ export class DiscordOutput implements ILogOutput {
      */
     private queue: LogPayload[] = [];
 
-    constructor(config: DiscordOutputConfig, client?: Client) {
+    constructor(config: DiscordOutputConfig, client?: IDiscordClient) {
         this.config = config;
         if (client) this.setClient(client);
     }
@@ -56,7 +57,7 @@ export class DiscordOutput implements ILogOutput {
      * const logger = new Logger({ discord: { ... } });
      * client.once("ready", () => logger.setDiscordClient(client));
      */
-    setClient(client: Client): void {
+    setClient(client: IDiscordClient): void {
         this.client = client;
 
         if (client.isReady()) {
@@ -127,7 +128,7 @@ export class DiscordOutput implements ILogOutput {
     ) {
         const timestamp = new Date().toLocaleString("fr-FR", { hour12: false });
         const emoji     = LEVEL_EMOJI[level];
-        const levelName = LogLevel[level].toUpperCase();
+        const levelName = LogLevel[level]!.toUpperCase();
 
         const embed: APIEmbed = {
             title:       `${emoji} ${levelName}${tag ? ` — ${tag}` : ""}`,

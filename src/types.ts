@@ -15,7 +15,6 @@ export enum LogLevel {
 //  CORE TYPES
 // ─────────────────────────────────────────────
 
-/** Payload passé à chaque output */
 export interface LogPayload {
     level:   LogLevel;
     message: string;
@@ -23,7 +22,6 @@ export interface LogPayload {
     infos?:  Record<string, unknown> | null;
 }
 
-/** Interface minimale que tout output doit respecter */
 export interface ILogOutput {
     log(payload: LogPayload): void | Promise<void>;
 }
@@ -33,13 +31,9 @@ export interface ILogOutput {
 // ─────────────────────────────────────────────
 
 export interface ConsoleOutputConfig {
-    /** Activer la sortie console (défaut: true) */
     enabled?:   boolean;
-    /** Niveau minimum à afficher */
     minLevel?:  LogLevel;
-    /** Si défini, seuls ces tags seront affichés */
     allowTags?: string[];
-    /** Afficher le bloc "Infos" (défaut: true) */
     showInfos?: boolean;
 }
 
@@ -48,19 +42,12 @@ export interface ConsoleOutputConfig {
 // ─────────────────────────────────────────────
 
 export interface FileOutputConfig {
-    /** Activer la sortie fichier */
-    enabled?:     boolean;
-    /** Dossier racine des logs (ex: "./logs") */
-    folderPath:   string;
-    /** Niveau minimum à écrire */
-    minLevel?:    LogLevel;
-    /** Si défini, seuls ces tags seront écrits */
-    allowTags?:   string[];
-    /** Taille max d'un fichier avant rotation (défaut: 5 MB) */
-    maxFileSize?: number;
-    /** Nombre de jours de rétention (défaut: 14) */
-    maxDays?:     number;
-    /** Grouper les logs par niveau dans des sous-dossiers (défaut: true) */
+    enabled?:      boolean;
+    folderPath:    string;
+    minLevel?:     LogLevel;
+    allowTags?:    string[];
+    maxFileSize?:  number;
+    maxDays?:      number;
     groupByLevel?: boolean;
 }
 
@@ -68,23 +55,53 @@ export interface FileOutputConfig {
 //  CONFIG — Discord
 // ─────────────────────────────────────────────
 
+/**
+ * Channel pouvant recevoir des messages.
+ * Utilisé pour les résultats de fetch et les channels sendables.
+ */
+export interface IDiscordSendableChannel {
+    name:          string;
+    isTextBased(): boolean;
+    isSendable():  boolean;
+    send(payload: unknown): Promise<unknown>;
+}
+
+/**
+ * Channel générique dans le cache — représente TOUS les types
+ * (TextChannel, CategoryChannel, VoiceChannel, etc.).
+ * send() est optionnel car CategoryChannel & VoiceChannel ne l'ont pas.
+ */
+export interface IDiscordCacheChannel {
+    name:          string;
+    isTextBased(): boolean;
+    isSendable():  boolean;
+    send?:         (payload: unknown) => Promise<unknown>;
+}
+
+/**
+ * Client Discord minimal — évite de dépendre directement de discord.js.
+ * Compatible avec Client<true> et Client<boolean> de discord.js v14+.
+ */
+export interface IDiscordClient {
+    isReady(): boolean;
+    once(event: "ready", listener: () => void): void;
+    users: {
+        fetch(id: string): Promise<{ send(payload: unknown): Promise<unknown> }>;
+    };
+    channels: {
+        cache: Map<string, IDiscordCacheChannel>;
+    };
+    guilds: {
+        fetch(id: string): Promise<IDiscordGuild>;
+        cache: Map<string, IDiscordGuild>;
+    };
+}
+
 export interface IDiscordGuild {
     id: string;
     channels: {
-        cache: Map<string, {
-            name: string;
-            type: number;
-            isTextBased(): boolean;
-            isSendable(): boolean;
-            send(payload: unknown): Promise<unknown>;
-        }>;
-        create(options: unknown): Promise<{
-            name: string;
-            type: number;
-            isTextBased(): boolean;
-            isSendable(): boolean;
-            send(payload: unknown): Promise<unknown>;
-        }>;
+        cache: Map<string, IDiscordSendableChannel>;
+        create(options: unknown): Promise<IDiscordSendableChannel>;
     };
     roles: { everyone: { id: string } };
     members: {
@@ -96,30 +113,22 @@ export interface IDiscordGuild {
     };
 }
 
-/** Config pour envoyer en DM */
 export interface DiscordDMConfig {
     dmUserId: string;
 }
 
-/** Config pour envoyer dans un channel de guilde */
 export interface DiscordGuildConfig {
     guildId:   string;
-    /** ID d'un channel fixe */
     channel?:  string;
-    /** ID d'une catégorie pour créer des channels dynamiques par tag */
     category?: string;
 }
 
 export type DiscordDestination = DiscordDMConfig | DiscordGuildConfig;
 
 export interface DiscordOutputConfig {
-    /** Activer la sortie Discord */
     enabled?:    boolean;
-    /** Niveau minimum */
     minLevel?:   LogLevel;
-    /** Tags autorisés */
     allowTags?:  string[];
-    /** Destination : DM ou guilde */
     destination: DiscordDestination;
 }
 
@@ -138,17 +147,14 @@ export interface LoggerConfig {
 // ─────────────────────────────────────────────
 
 export type LogFn = (
-    level:    LogLevel,
-    message:  string,
-    tag?:     string,
-    infos?:   Record<string, unknown> | null
+    level:   LogLevel,
+    message: string,
+    tag?:    string,
+    infos?:  Record<string, unknown> | null
 ) => Promise<void>;
 
 export interface LogProxy extends LogFn {
-    /** Envoie uniquement sur la console */
     console: LogFn;
-    /** Envoie uniquement dans les fichiers */
     file:    LogFn;
-    /** Envoie uniquement sur Discord */
     discord: LogFn;
 }
