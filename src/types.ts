@@ -68,27 +68,6 @@ export interface FileOutputConfig {
 //  CONFIG — Discord
 // ─────────────────────────────────────────────
 
-/** Client Discord minimal — évite de dépendre directement de discord.js */
-export interface IDiscordClient {
-    isReady(): boolean;
-    /** Écoute un événement une seule fois — utilisé pour détecter le ready */
-    once(event: "ready", listener: () => void): void;
-    users: {
-        fetch(id: string): Promise<{ send(payload: unknown): Promise<unknown> }>;
-    };
-    channels: {
-        cache: Map<string, {
-            isTextBased(): boolean;
-            isSendable(): boolean;
-            send(payload: unknown): Promise<unknown>;
-        }>;
-    };
-    guilds: {
-        fetch(id: string): Promise<IDiscordGuild>;
-        cache: Map<string, IDiscordGuild>;
-    };
-}
-
 export interface IDiscordGuild {
     id: string;
     channels: {

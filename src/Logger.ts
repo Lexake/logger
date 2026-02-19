@@ -1,8 +1,8 @@
+import type { Client } from "discord.js";
 import { ConsoleOutput }  from "./outputs/ConsoleOutput";
 import { DiscordOutput }  from "./outputs/DiscordOutput";
 import { FileOutput }     from "./outputs/FileOutput";
 import type {
-    IDiscordClient,
     ILogOutput,
     LogFn,
     LoggerConfig,
@@ -37,7 +37,7 @@ export class Logger {
     /** Proxy typé : logger.log(...) ou logger.log.console(...) */
     public log: LogProxy;
 
-    constructor(config: LoggerConfig, discordClient?: IDiscordClient) {
+    constructor(config: LoggerConfig, discordClient?: Client) {
         this.outputs = {
             console: config.console ? new ConsoleOutput(config.console) : null,
             file:    config.file    ? new FileOutput(config.file)       : null,
@@ -61,7 +61,7 @@ export class Logger {
      * client.once("ready", () => logger.setDiscordClient(client));
      * client.login(token);
      */
-    setDiscordClient(client: IDiscordClient): void {
+    setDiscordClient(client: Client): void {
         if (!this.outputs.discord) {
             console.warn("[Logger] setDiscordClient() appelé mais la sortie Discord n'est pas configurée.");
             return;

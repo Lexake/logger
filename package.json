@@ -28,6 +28,7 @@
   "devDependencies": {
     "@types/chalk": "^0.4.31",
     "@types/node": "^25.2.3",
+    "discord.js": "^14.25.1",
     "typescript": "^5.9.3"
   },
   "peerDependencies": {

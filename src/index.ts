@@ -25,7 +25,6 @@ export {
     type DiscordDestination,
     // Interfaces
     type ILogOutput,
-    type IDiscordClient,
     type IDiscordGuild,
     // Payload & Proxy
     type LogPayload,

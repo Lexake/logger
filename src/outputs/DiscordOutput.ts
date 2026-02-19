@@ -1,7 +1,7 @@
+import type { APIEmbed, Client } from "discord.js";
 import {
     DiscordGuildConfig,
     DiscordOutputConfig,
-    IDiscordClient,
     ILogOutput,
     LogLevel,
     LogPayload,
@@ -30,7 +30,7 @@ const MAX_QUEUE_SIZE = 100;
 
 export class DiscordOutput implements ILogOutput {
     private config: DiscordOutputConfig;
-    private client: IDiscordClient | null = null;
+    private client: Client | null = null;
 
     /**
      * Queue des payloads reçus avant que le client soit ready.
@@ -39,7 +39,7 @@ export class DiscordOutput implements ILogOutput {
      */
     private queue: LogPayload[] = [];
 
-    constructor(config: DiscordOutputConfig, client?: IDiscordClient) {
+    constructor(config: DiscordOutputConfig, client?: Client) {
         this.config = config;
         if (client) this.setClient(client);
     }
@@ -56,7 +56,7 @@ export class DiscordOutput implements ILogOutput {
      * const logger = new Logger({ discord: { ... } });
      * client.once("ready", () => logger.setDiscordClient(client));
      */
-    setClient(client: IDiscordClient): void {
+    setClient(client: Client): void {
         this.client = client;
 
         if (client.isReady()) {
@@ -129,12 +129,12 @@ export class DiscordOutput implements ILogOutput {
         const emoji     = LEVEL_EMOJI[level];
         const levelName = LogLevel[level].toUpperCase();
 
-        const embed: Record<string, unknown> = {
+        const embed: APIEmbed = {
             title:       `${emoji} ${levelName}${tag ? ` — ${tag}` : ""}`,
             description: `\`\`\`${message}\`\`\``,
             color:       LEVEL_COLORS[level],
             footer:      { text: timestamp },
-            fields:      [] as unknown[],
+            fields:      [],
         };
 
         if (infos && Object.keys(infos).length > 0) {
@@ -152,7 +152,7 @@ export class DiscordOutput implements ILogOutput {
     //  Envois
     // ─────────────────────────────────────────────
 
-    private async sendDM(userId: string, embed: unknown): Promise<void> {
+    private async sendDM(userId: string, embed: APIEmbed): Promise<void> {
         try {
             const user = await this.client!.users.fetch(userId);
             await user.send({ embeds: [embed] });
@@ -163,7 +163,7 @@ export class DiscordOutput implements ILogOutput {
 
     private async sendToGuild(
         dest:  DiscordGuildConfig,
-        embed: unknown,
+        embed: APIEmbed,
         tag?:  string
     ): Promise<void> {
         let guild;
