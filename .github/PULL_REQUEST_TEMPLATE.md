@@ -7,6 +7,7 @@
 - [ ] Bug fix
 - [ ] Nouvelle fonctionnalité
 - [ ] Breaking change
+- [ ] Optimisation
 - [ ] Documentation
 
 ## Checklist

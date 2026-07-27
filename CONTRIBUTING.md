@@ -19,6 +19,13 @@ npm run dev
 4. Vérifie que `npm run build` et `npm test` passent
 5. Ouvre une Pull Request en remplissant le template
 
+```bash
+git checkout -b "feat/ma-fonctionnalite"
+git add .
+git commit -m "feat/ma-fonctionnalite"
+git push -u origin feat/ma-fonctionnalite
+```
+
 ## Convention de commits
 
 On suit une convention simple :
