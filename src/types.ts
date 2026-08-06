@@ -2,6 +2,8 @@
 //  ENUMS
 // ─────────────────────────────────────────────
 
+import { MessageCreateOptions, MessagePayload } from "discord.js";
+
 export enum LogLevel {
     Debug = 0,
     Information = 1,
@@ -63,7 +65,9 @@ export interface IDiscordSendableChannel {
     name: string;
     isTextBased(): boolean;
     isSendable(): boolean;
-    send(payload: unknown): Promise<unknown>;
+    send(
+        payload: string | MessagePayload | MessageCreateOptions,
+    ): Promise<unknown>;
 }
 
 /**
@@ -75,7 +79,9 @@ export interface IDiscordCacheChannel {
     name?: string;
     isTextBased(): boolean;
     isSendable(): boolean;
-    send?: (payload: unknown) => Promise<unknown>;
+    send?: (
+        options: string | MessagePayload | MessageCreateOptions,
+    ) => Promise<unknown>;
 }
 
 /**
@@ -88,7 +94,11 @@ export interface IDiscordClient {
     users: {
         fetch(
             id: string,
-        ): Promise<{ send(payload: unknown): Promise<unknown> }>;
+        ): Promise<{
+            send(
+                payload: string | MessagePayload | MessageCreateOptions,
+            ): Promise<unknown>;
+        }>;
     };
     channels: {
         cache: Map<string, IDiscordCacheChannel>;
