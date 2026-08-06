@@ -33,19 +33,19 @@ npm install @lex0u/logger
 import { Logger, LogLevel } from "@lex0u/logger";
 
 const logger = new Logger({
-  console: {
-    enabled: true,
-    minLevel: LogLevel.Debug,
-  },
-  file: {
-    enabled: true,
-    folderPath: "./logs",
-  },
+    console: {
+        enabled: true,
+        minLevel: LogLevel.Debug,
+    },
+    file: {
+        enabled: true,
+        folderPath: "./logs",
+    },
 });
 
 await logger.log(LogLevel.Information, "Serveur démarré", "App");
 await logger.log(LogLevel.Error, "Connexion échouée", "DB", {
-  host: "localhost",
+    host: "localhost",
 });
 
 // Sortie ciblée
@@ -66,14 +66,14 @@ La méthode la plus simple : crée un webhook dans les paramètres d'un salon Di
 import { Logger, LogLevel } from "@lex0u/logger";
 
 const logger = new Logger({
-  console: { enabled: true },
-  discord: {
-    enabled: true,
-    minLevel: LogLevel.Warning,
-    destination: {
-      webhookUrl: process.env.DISCORD_WEBHOOK_URL!,
+    console: { enabled: true },
+    discord: {
+        enabled: true,
+        minLevel: LogLevel.Warning,
+        destination: {
+            webhookUrl: process.env.DISCORD_WEBHOOK_URL!,
+        },
     },
-  },
 });
 
 await logger.log(LogLevel.Error, "Erreur critique !", "DB");
@@ -111,21 +111,21 @@ import { Logger, LogLevel } from "@lex0u/logger";
 import { Client, GatewayIntentBits } from "discord.js";
 
 const logger = new Logger({
-  console: { enabled: true },
-  discord: {
-    enabled: true,
-    minLevel: LogLevel.Warning,
-    destination: {
-      guildId: "...",
-      channel: "...",
+    console: { enabled: true },
+    discord: {
+        enabled: true,
+        minLevel: LogLevel.Warning,
+        destination: {
+            guildId: "...",
+            channel: "...",
+        },
     },
-  },
 });
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
 client.once("ready", () => {
-  logger.setDiscordClient(client);
+    logger.setDiscordClient(client);
 });
 
 client.login(process.env.DISCORD_TOKEN);
@@ -138,37 +138,37 @@ import { Logger, LogLevel } from "@lex0u/logger";
 import { Client, GatewayIntentBits } from "discord.js";
 
 const discordConfig: DiscordOutputConfig = {
-  enabled: config.isProd && !!config.bot.logChannelId,
-  minLevel: LogLevel.Error,
-  destination: {
-    guildId: config.bot.guildId ?? "",
-    channel: config.bot.logChannelId ?? "",
-  },
+    enabled: config.isProd && !!config.bot.logChannelId,
+    minLevel: LogLevel.Error,
+    destination: {
+        guildId: config.bot.guildId ?? "",
+        channel: config.bot.logChannelId ?? "",
+    },
 };
 
 const loggerConfig: LoggerConfig = {
-  console: {
-    enabled: true,
-    minLevel: config.isDev ? LogLevel.Debug : LogLevel.Information,
-  },
-  file: {
-    enabled: true,
-    folderPath: "./logs",
-    minLevel: LogLevel.Information,
-    groupByLevel: true,
-    maxFileSize: 5_000_000,
-    maxDays: config.isDev ? 7 : 30,
-  },
-  ...(config.bot.logChannelId && config.bot.guildId
-    ? { discord: discordConfig }
-    : {}),
+    console: {
+        enabled: true,
+        minLevel: config.isDev ? LogLevel.Debug : LogLevel.Information,
+    },
+    file: {
+        enabled: true,
+        folderPath: "./logs",
+        minLevel: LogLevel.Information,
+        groupByLevel: true,
+        maxFileSize: 5_000_000,
+        maxDays: config.isDev ? 7 : 30,
+    },
+    ...(config.bot.logChannelId && config.bot.guildId
+        ? { discord: discordConfig }
+        : {}),
 };
 
 const logger = new Logger(loggerConfig);
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
 client.once("ready", () => {
-  logger.setDiscordClient(client);
+    logger.setDiscordClient(client);
 });
 
 client.login(process.env.DISCORD_TOKEN);
