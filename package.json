@@ -1,6 +1,6 @@
 {
     "name": "@lex0u/logger",
-    "version": "2.2.2",
+    "version": "2.2.4",
     "description": "Logger complet et universel (Typescript)",
     "license": "MIT",
     "keywords": [
@@ -26,7 +26,8 @@
         "clean": "rimraf dist",
         "test": "vitest run",
         "test:watch": "vitest",
-        "test:coverage": "vitest run --coverage"
+        "test:coverage": "vitest run --coverage",
+        "prepublishOnly": "npm run clean && npm run build"
     },
     "engines": {
         "node": ">=20"
@@ -45,5 +46,8 @@
         "discord.js": {
             "optional": true
         }
-    }
+    },
+    "files": [
+        "dist"
+    ]
 }
