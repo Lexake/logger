@@ -9,21 +9,21 @@ import {
 } from "../types";
 
 const LEVEL_COLORS: Record<LogLevel, number> = {
-    [LogLevel.Debug]:       0x9b59b6,
+    [LogLevel.Debug]: 0x9b59b6,
     [LogLevel.Information]: 0x3498db,
-    [LogLevel.Success]:     0x2ecc71,
-    [LogLevel.Warning]:     0xf39c12,
-    [LogLevel.Error]:       0xe74c3c,
-    [LogLevel.Fatal]:       0x8e0000,
+    [LogLevel.Success]: 0x2ecc71,
+    [LogLevel.Warning]: 0xf39c12,
+    [LogLevel.Error]: 0xe74c3c,
+    [LogLevel.Fatal]: 0x8e0000,
 };
 
 const LEVEL_EMOJI: Record<LogLevel, string> = {
-    [LogLevel.Debug]:       "🟣",
+    [LogLevel.Debug]: "🟣",
     [LogLevel.Information]: "🔵",
-    [LogLevel.Success]:     "🟢",
-    [LogLevel.Warning]:     "🟠",
-    [LogLevel.Error]:       "🔴",
-    [LogLevel.Fatal]:       "💀",
+    [LogLevel.Success]: "🟢",
+    [LogLevel.Warning]: "🟠",
+    [LogLevel.Error]: "🔴",
+    [LogLevel.Fatal]: "💀",
 };
 
 /** Taille maximale de la queue pre-ready (évite les fuites mémoire) */
@@ -71,8 +71,17 @@ export class DiscordOutput implements ILogOutput {
 
     async log(payload: LogPayload): Promise<void> {
         if (!this.config.enabled) return;
-        if (this.config.minLevel !== undefined && payload.level < this.config.minLevel) return;
-        if (payload.tag && this.config.allowTags && !this.config.allowTags.includes(payload.tag)) return;
+        if (
+            this.config.minLevel !== undefined &&
+            payload.level < this.config.minLevel
+        )
+            return;
+        if (
+            payload.tag &&
+            this.config.allowTags &&
+            !this.config.allowTags.includes(payload.tag)
+        )
+            return;
 
         // Webhook : envoi direct, aucun client Discord requis
         if ("webhookUrl" in this.config.destination) {
@@ -107,10 +116,15 @@ export class DiscordOutput implements ILogOutput {
     //  Envoi
     // ─────────────────────────────────────────────
 
-    private async send({ level, message, tag, infos }: LogPayload): Promise<void> {
+    private async send({
+        level,
+        message,
+        tag,
+        infos,
+    }: LogPayload): Promise<void> {
         try {
             const embed = this.buildEmbed(level, message, tag, infos);
-            const dest  = this.config.destination;
+            const dest = this.config.destination;
 
             if ("webhookUrl" in dest) {
                 await this.sendWebhook(dest.webhookUrl, embed);
@@ -120,7 +134,10 @@ export class DiscordOutput implements ILogOutput {
                 await this.sendToGuild(dest, embed, tag);
             }
         } catch (err) {
-            console.error("[Logger:Discord] Erreur lors de l'envoi du log :", err);
+            console.error(
+                "[Logger:Discord] Erreur lors de l'envoi du log :",
+                err,
+            );
         }
     }
 
@@ -129,28 +146,29 @@ export class DiscordOutput implements ILogOutput {
     // ─────────────────────────────────────────────
 
     private buildEmbed(
-        level:   LogLevel,
+        level: LogLevel,
         message: string,
-        tag?:    string,
-        infos?:  Record<string, unknown> | null
+        tag?: string,
+        infos?: Record<string, unknown> | null,
     ) {
         const timestamp = new Date().toLocaleString("fr-FR", { hour12: false });
-        const emoji     = LEVEL_EMOJI[level];
+        const emoji = LEVEL_EMOJI[level];
         const levelName = LogLevel[level]!.toUpperCase();
 
         const embed: APIEmbed = {
-            title:       `${emoji} ${levelName}${tag ? ` — ${tag}` : ""}`,
+            title: `${emoji} ${levelName}${tag ? ` — ${tag}` : ""}`,
             description: `\`\`\`${message}\`\`\``,
-            color:       LEVEL_COLORS[level],
-            footer:      { text: timestamp },
-            fields:      [],
+            color: LEVEL_COLORS[level],
+            footer: { text: timestamp },
+            fields: [],
         };
 
         if (infos && Object.keys(infos).length > 0) {
             const value = `\`\`\`json\n${JSON.stringify(infos, null, 2)}\`\`\``;
             (embed.fields as unknown[]).push({
-                name:  "Informations",
-                value: value.length > 1024 ? value.slice(0, 1020) + "…```" : value,
+                name: "Informations",
+                value:
+                    value.length > 1024 ? value.slice(0, 1020) + "…```" : value,
             });
         }
 
@@ -166,44 +184,60 @@ export class DiscordOutput implements ILogOutput {
             const user = await this.client!.users.fetch(userId);
             await user.send({ embeds: [embed] });
         } catch {
-            console.warn(`[Logger:Discord] Impossible d'envoyer un DM à ${userId}`);
+            console.warn(
+                `[Logger:Discord] Impossible d'envoyer un DM à ${userId}`,
+            );
         }
     }
 
     /**
      * Envoie un embed via un webhook Discord — aucun bot/client requis.
      */
-    private async sendWebhook(webhookUrl: string, embed: APIEmbed): Promise<void> {
+    private async sendWebhook(
+        webhookUrl: string,
+        embed: APIEmbed,
+    ): Promise<void> {
         const res = await fetch(webhookUrl, {
-            method:  "POST",
+            method: "POST",
             headers: { "Content-Type": "application/json" },
-            body:    JSON.stringify({ embeds: [embed] }),
+            body: JSON.stringify({ embeds: [embed] }),
         });
 
         if (!res.ok) {
-            console.warn(`[Logger:Discord] Webhook a répondu ${res.status} ${res.statusText}`);
+            console.warn(
+                `[Logger:Discord] Webhook a répondu ${res.status} ${res.statusText}`,
+            );
         }
     }
 
     private async sendToGuild(
-        dest:  DiscordGuildConfig,
+        dest: DiscordGuildConfig,
         embed: APIEmbed,
-        tag?:  string
+        tag?: string,
     ): Promise<void> {
         let guild;
         try {
-            guild = this.client!.guilds.cache.get(dest.guildId)
-                ?? await this.client!.guilds.fetch(dest.guildId);
+            guild =
+                this.client!.guilds.cache.get(dest.guildId) ??
+                (await this.client!.guilds.fetch(dest.guildId));
         } catch {
-            console.warn(`[Logger:Discord] Guild introuvable : ${dest.guildId}`);
+            console.warn(
+                `[Logger:Discord] Guild introuvable : ${dest.guildId}`,
+            );
             return;
         }
 
         // Channel fixe
         if (dest.channel) {
             const channel = guild.channels.cache.get(dest.channel);
-            if (!channel?.isTextBased() || !channel.isSendable()) {
-                console.warn(`[Logger:Discord] Channel ${dest.channel} invalide ou inaccessible.`);
+            if (
+                !channel?.isTextBased() ||
+                !channel.isSendable?.() ||
+                !channel.send
+            ) {
+                console.warn(
+                    `[Logger:Discord] Channel ${dest.channel} invalide ou inaccessible.`,
+                );
                 return;
             }
             await channel.send({ embeds: [embed] }).catch(() => null);
@@ -213,27 +247,36 @@ export class DiscordOutput implements ILogOutput {
         // Channel dynamique par tag dans une catégorie
         if (dest.category && tag) {
             const channelName = `📋│${tag.toLowerCase()}`;
-            let channel = [...guild.channels.cache.values()]
-                .find(c => c.name === channelName);
+            let channel = [...guild.channels.cache.values()].find(
+                (c) => c.name === channelName,
+            );
 
             if (!channel) {
                 try {
                     channel = await guild.channels.create({
-                        name:   channelName,
+                        name: channelName,
                         parent: dest.category,
                     });
                 } catch {
-                    console.warn(`[Logger:Discord] Impossible de créer le channel ${channelName}`);
+                    console.warn(
+                        `[Logger:Discord] Impossible de créer le channel ${channelName}`,
+                    );
                     return;
                 }
             }
 
-            if (channel?.isTextBased() && channel.isSendable()) {
+            if (
+                channel?.isTextBased() &&
+                channel.isSendable?.() &&
+                channel.send
+            ) {
                 await channel.send({ embeds: [embed] }).catch(() => null);
             }
             return;
         }
 
-        console.warn("[Logger:Discord] Aucune destination valide (channel ou category+tag requis).");
+        console.warn(
+            "[Logger:Discord] Aucune destination valide (channel ou category+tag requis).",
+        );
     }
 }
