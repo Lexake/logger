@@ -4,3 +4,11 @@ dist/tsconfig.tsbuildinfo
 *.tgz
 tsconfig.json
 *.test.ts
+coverage/
+.github/
+.gitignore
+CONTRIBUTING.md
+SECURITY.md
+vitest.config.ts
+.vscode/
+
