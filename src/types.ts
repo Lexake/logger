@@ -3,12 +3,12 @@
 // ─────────────────────────────────────────────
 
 export enum LogLevel {
-    Debug       = 0,
+    Debug = 0,
     Information = 1,
-    Success     = 2,
-    Warning     = 3,
-    Error       = 4,
-    Fatal       = 5,
+    Success = 2,
+    Warning = 3,
+    Error = 4,
+    Fatal = 5,
 }
 
 // ─────────────────────────────────────────────
@@ -16,10 +16,10 @@ export enum LogLevel {
 // ─────────────────────────────────────────────
 
 export interface LogPayload {
-    level:   LogLevel;
+    level: LogLevel;
     message: string;
-    tag?:    string;
-    infos?:  Record<string, unknown> | null;
+    tag?: string;
+    infos?: Record<string, unknown> | null;
 }
 
 export interface ILogOutput {
@@ -31,8 +31,8 @@ export interface ILogOutput {
 // ─────────────────────────────────────────────
 
 export interface ConsoleOutputConfig {
-    enabled?:   boolean;
-    minLevel?:  LogLevel;
+    enabled?: boolean;
+    minLevel?: LogLevel;
     allowTags?: string[];
     showInfos?: boolean;
 }
@@ -42,12 +42,12 @@ export interface ConsoleOutputConfig {
 // ─────────────────────────────────────────────
 
 export interface FileOutputConfig {
-    enabled?:      boolean;
-    folderPath:    string;
-    minLevel?:     LogLevel;
-    allowTags?:    string[];
-    maxFileSize?:  number;
-    maxDays?:      number;
+    enabled?: boolean;
+    folderPath: string;
+    minLevel?: LogLevel;
+    allowTags?: string[];
+    maxFileSize?: number;
+    maxDays?: number;
     groupByLevel?: boolean;
 }
 
@@ -60,9 +60,9 @@ export interface FileOutputConfig {
  * Utilisé pour les résultats de fetch et les channels sendables.
  */
 export interface IDiscordSendableChannel {
-    name:          string;
+    name: string;
     isTextBased(): boolean;
-    isSendable():  boolean;
+    isSendable(): boolean;
     send(payload: unknown): Promise<unknown>;
 }
 
@@ -72,10 +72,10 @@ export interface IDiscordSendableChannel {
  * send() est optionnel car CategoryChannel & VoiceChannel ne l'ont pas.
  */
 export interface IDiscordCacheChannel {
-    name:          string;
+    name?: string;
     isTextBased(): boolean;
-    isSendable():  boolean;
-    send?:         (payload: unknown) => Promise<unknown>;
+    isSendable(): boolean;
+    send?: (payload: unknown) => Promise<unknown>;
 }
 
 /**
@@ -86,7 +86,9 @@ export interface IDiscordClient {
     isReady(): boolean;
     once(event: "ready", listener: () => void): void;
     users: {
-        fetch(id: string): Promise<{ send(payload: unknown): Promise<unknown> }>;
+        fetch(
+            id: string,
+        ): Promise<{ send(payload: unknown): Promise<unknown> }>;
     };
     channels: {
         cache: Map<string, IDiscordCacheChannel>;
@@ -118,8 +120,8 @@ export interface DiscordDMConfig {
 }
 
 export interface DiscordGuildConfig {
-    guildId:   string;
-    channel?:  string;
+    guildId: string;
+    channel?: string;
     category?: string;
 }
 
@@ -127,12 +129,15 @@ export interface DiscordWebhookConfig {
     webhookUrl: string;
 }
 
-export type DiscordDestination = DiscordDMConfig | DiscordGuildConfig | DiscordWebhookConfig;
+export type DiscordDestination =
+    | DiscordDMConfig
+    | DiscordGuildConfig
+    | DiscordWebhookConfig;
 
 export interface DiscordOutputConfig {
-    enabled?:    boolean;
-    minLevel?:   LogLevel;
-    allowTags?:  string[];
+    enabled?: boolean;
+    minLevel?: LogLevel;
+    allowTags?: string[];
     destination: DiscordDestination;
 }
 
@@ -142,7 +147,7 @@ export interface DiscordOutputConfig {
 
 export interface LoggerConfig {
     console?: ConsoleOutputConfig;
-    file?:    FileOutputConfig;
+    file?: FileOutputConfig;
     discord?: DiscordOutputConfig;
 }
 
@@ -151,14 +156,14 @@ export interface LoggerConfig {
 // ─────────────────────────────────────────────
 
 export type LogFn = (
-    level:   LogLevel,
+    level: LogLevel,
     message: string,
-    tag?:    string,
-    infos?:  Record<string, unknown> | null
+    tag?: string,
+    infos?: Record<string, unknown> | null,
 ) => Promise<void>;
 
 export interface LogProxy extends LogFn {
     console: LogFn;
-    file:    LogFn;
+    file: LogFn;
     discord: LogFn;
 }
