@@ -7,7 +7,7 @@ export { Logger } from "./Logger";
 //  Outputs (si besoin d'extension externe)
 // ─────────────────────────────────────────────
 export { ConsoleOutput } from "./outputs/ConsoleOutput";
-export { FileOutput }    from "./outputs/FileOutput";
+export { FileOutput } from "./outputs/FileOutput";
 export { DiscordOutput } from "./outputs/DiscordOutput";
 
 // ─────────────────────────────────────────────
@@ -31,5 +31,4 @@ export {
     // Payload & Proxy
     type LogPayload,
     type LogFn,
-    type LogProxy,
 } from "./types";

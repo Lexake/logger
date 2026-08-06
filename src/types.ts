@@ -58,23 +58,14 @@ export interface FileOutputConfig {
 // ─────────────────────────────────────────────
 
 /**
- * Channel pouvant recevoir des messages.
- * Utilisé pour les résultats de fetch et les channels sendables.
+ * Channel pouvant recevoir des messages (typé proprement avec d.js sans bloquer)
  */
 export interface IDiscordSendableChannel {
-    name: string;
-    isTextBased(): boolean;
-    isSendable(): boolean;
     send(
-        payload: string | MessagePayload | MessageCreateOptions,
+        options: string | MessagePayload | MessageCreateOptions,
     ): Promise<unknown>;
 }
 
-/**
- * Channel générique dans le cache — représente TOUS les types
- * (TextChannel, CategoryChannel, VoiceChannel, etc.).
- * send() est optionnel car CategoryChannel & VoiceChannel ne l'ont pas.
- */
 export interface IDiscordCacheChannel {
     name?: string;
     isTextBased(): boolean;
@@ -84,35 +75,16 @@ export interface IDiscordCacheChannel {
     ) => Promise<unknown>;
 }
 
-/**
- * Client Discord minimal — évite de dépendre directement de discord.js.
- * Compatible avec Client<true> et Client<boolean> de discord.js v14+.
- */
-export interface IDiscordClient {
-    isReady(): boolean;
-    once(event: "ready", listener: () => void): void;
-    users: {
-        fetch(
-            id: string,
-        ): Promise<{
-            send(
-                payload: string | MessagePayload | MessageCreateOptions,
-            ): Promise<unknown>;
-        }>;
-    };
-    channels: {
-        cache: Map<string, IDiscordCacheChannel>;
-    };
-    guilds: {
-        fetch(id: string): Promise<IDiscordGuild>;
-        cache: Map<string, IDiscordGuild>;
-    };
-}
-
 export interface IDiscordGuild {
     id: string;
+    name: string;
     channels: {
-        cache: Map<string, IDiscordSendableChannel>;
+        cache: {
+            forEach(
+                callback: (value: IDiscordCacheChannel, key: string) => void,
+            ): void;
+            get(id: string): IDiscordCacheChannel | undefined;
+        };
         create(options: unknown): Promise<IDiscordSendableChannel>;
     };
     roles: { everyone: { id: string } };
@@ -122,6 +94,34 @@ export interface IDiscordGuild {
                 has(perms: string[]): boolean;
             };
         } | null;
+    };
+}
+
+/**
+ * Client Discord minimal découplé et compatible avec discord.js v14+
+ */
+export interface IDiscordClient {
+    isReady(): boolean;
+    once(event: "ready", listener: () => void): void;
+    users: {
+        fetch(id: string): Promise<IDiscordSendableChannel>;
+    };
+    channels: {
+        cache: {
+            forEach(
+                callback: (value: IDiscordCacheChannel, key: string) => void,
+            ): void;
+            get(id: string): IDiscordCacheChannel | undefined;
+        };
+    };
+    guilds: {
+        fetch(id: string): Promise<IDiscordGuild>;
+        cache: {
+            forEach(
+                callback: (value: IDiscordGuild, key: string) => void,
+            ): void;
+            get(id: string): IDiscordGuild | undefined;
+        };
     };
 }
 
@@ -170,10 +170,4 @@ export type LogFn = (
     message: string,
     tag?: string,
     infos?: Record<string, unknown> | null,
-) => Promise<void>;
-
-export interface LogProxy extends LogFn {
-    console: LogFn;
-    file: LogFn;
-    discord: LogFn;
-}
+) => void;
