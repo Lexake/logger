@@ -37,7 +37,7 @@
         "@vitest/coverage-v8": "^3.0.0",
         "discord.js": "^14.26.4",
         "typescript": "^5.9.3",
-        "vitest": "^3.0.0"
+        "vitest": "^4.1.11"
     },
     "peerDependencies": {
         "discord.js": ">=14.0.0"
